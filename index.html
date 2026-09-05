@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, shrink-to-fit=no, viewport-fit=cover" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Sniper</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#131722" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <script type="module" crossorigin src="/assets/index-BeY-dqbS.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-DH82xisb.css">
+  <link rel="manifest" href="/manifest.webmanifest"><script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+  <body>
+    <div class="app-container">
+      <main id="single-chart-container">
+        <!-- Single chart will be injected here -->
+      </main>
+      <!-- Indicator Settings Modal (Fullscreen Auto-Fit) -->
+      <div id="settings-modal" class="modal-overlay" style="display: none; z-index: 10000; justify-content: center; align-items: center; background: rgba(0, 0, 0, 0.4);">
+        <div class="modal-content" style="width: 100%; height: 100dvh; max-width: 100%; max-height: 100dvh; background: #ffffff; padding: 16px 20px; border-radius: 0; border: none; display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box;">
+          <div id="settings-form" style="display: flex; flex-direction: column; justify-content: space-between; gap: 6px; flex: 1; min-height: 0; overflow: hidden; padding-right: 2px; transform-origin: top left;">
+            <!-- Settings rows will be generated here -->
+          </div>
+          <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 12px; border-top: 1px solid #e0e3eb; padding-top: 12px; flex-shrink: 0;">
+            <button id="settings-cancel-btn" style="background: #f0f3fa; color: #131722; border: 1px solid #d1d4dc; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; min-height: 42px; min-width: 90px; touch-action: manipulation;">Cancel</button>
+            <button id="settings-save-btn" style="background: #131722; color: #fff; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; min-height: 42px; min-width: 90px; touch-action: manipulation;">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coin Selector Modal -->
+      <div id="coin-selector-modal" class="modal-overlay">
+        <div class="modal-content">
+          <div class="modal-header">
+            <input type="text" id="coin-search" placeholder="Search symbol..." autocomplete="off" />
+            <button id="toggle-favorites" class="fav-filter-btn" title="Toggle Favorites Only">⭐ Favorites</button>
+          </div>
+          <div class="modal-list-header">
+            <div class="col-symbol">Symbol</div>
+            <div class="col-price">Last Price</div>
+            <div class="col-change" id="sort-change" style="cursor:pointer;" title="Sort by 24h Change">24h Chg ↕</div>
+          </div>
+          <div id="coin-list" class="modal-list">
+            <div class="loading-text">Loading USDT Futures...</div>
+          </div>
+        </div> <!-- Penutup modal-content -->
+      </div> <!-- Penutup modal-overlay -->
+
+      <div id="toast-container" class="toast-container"></div>
+      
+      <!-- Top Control Panel (Settings, TF) -->
+      <div class="control-panel-top" style="position: absolute; top: 10px; left: 10px; z-index: 9999; display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;">
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <button type="button" class="refresh-button" id="settings-btn" title="Settings: Timeframe, Indikator, MA/EMA, cRSI" style="color: #131722; font-weight: bold;">⚙️</button>
+        </div>
+
+        <div class="tf-selector">
+          <button class="tf-btn" data-tf="30s" title="30 detik">0</button>
+          <button class="tf-btn" data-tf="1m">1</button>
+          <button class="tf-btn" data-tf="5m">5</button>
+          <button class="tf-btn active" data-tf="15m">15</button>
+          <button class="tf-btn" data-tf="30m">30</button>
+          <button class="tf-btn" data-tf="1h">1H</button>
+          <button class="tf-btn" data-tf="4h">4H</button>
+          <button class="tf-btn" data-tf="12h">12H</button>
+          <button class="tf-btn" data-tf="1d">1D</button>
+        </div>
+      </div>
+      <!-- Quick Favorites Bar -->
+      <div id="favorites-bar" class="favorites-bar"></div>
+      
+
+
+      <!-- Indicators Gear Modal dihapus — semua isinya sudah digabung ke #settings-modal (1 tombol ⚙️ di atas) -->
+
+
+
+
+
+    </div> <!-- Penutup app-container -->
+    <!-- Tombol gear bawah dihapus — sekarang cuma ada 1 tombol ⚙️ (pojok kiri atas) -->
+
+    <!-- RSI Scanner FAB dihapus total -->
+
+    <!-- Drawing Toolbar (Bottom Left) — tombol pensil dihapus, semua tool langsung tampil, urut dari bawah ke atas -->
+    <div id="drawing-toolbar" class="drawing-toolbar">
+      <button type="button" class="draw-tool-btn" id="draw-horiz-btn" title="Garis Horizontal (2-Titik)">➖</button>
+      <button type="button" class="draw-tool-btn" id="draw-trend-btn" title="Garis Miring / Trendline (2-Titik Draggable)">📐</button>
+      <button type="button" class="draw-tool-btn" id="draw-rect-btn" title="Kotak / Rectangle (klik sudut awal, lalu sudut seberangnya)" style="font-size: 17px;">▭</button>
+      <button type="button" class="draw-tool-btn" id="draw-text-btn" title="Teks (klik posisi di chart, lalu ketik — Enter simpan, Esc batal)" style="font-weight: 800; font-size: 15px;">T</button>
+      <button type="button" class="draw-tool-btn" id="draw-lock-btn" title="Kunci Semua Garis (🔒 Kunci / 🔓 Buka Kunci)">🔓</button>
+
+      <!-- Color Picker Swatch Dropdown -->
+      <div style="position: relative; display: flex; align-items: center;">
+        <button type="button" class="draw-tool-btn" id="draw-color-btn" title="Pilih Warna Garis" style="padding: 0;">
+          <div id="draw-color-preview" style="width: 14px; height: 14px; border-radius: 3px; background: #D50000; border: 1px solid rgba(0,0,0,0.2);"></div>
+        </button>
+        <div id="draw-color-palette" class="draw-palette-popup" style="display: none;">
+          <div class="draw-color-opt" data-color="#131722" style="background: #131722;" title="Hitam"></div>
+          <div class="draw-color-opt" data-color="#D50000" style="background: #D50000;" title="Merah"></div>
+          <div class="draw-color-opt" data-color="#089981" style="background: #089981;" title="Hijau"></div>
+          <div class="draw-color-opt" data-color="#FF9800" style="background: #FF9800;" title="Oranye"></div>
+          <div class="draw-color-opt" data-color="#2962FF" style="background: #2962FF;" title="Biru"></div>
+          <div class="draw-color-opt" data-color="#FF00FF" style="background: #FF00FF;" title="Magenta"></div>
+          <div class="draw-color-opt" data-color="#00E5FF" style="background: #00E5FF;" title="Cyan"></div>
+          <div class="draw-color-opt" data-color="#787B86" style="background: #787B86;" title="Abu-abu"></div>
+        </div>
+      </div>
+
+      <!-- Opacity Slider — kotak digambar tanpa border, cuma blok warna. Range 5%–50% -->
+      <div style="position: relative; display: flex; align-items: center;">
+        <button type="button" class="draw-tool-btn" id="draw-opacity-btn" title="Opacity Isi Kotak (5% – 50%)" style="font-weight: 800; font-size: 10px;">20%</button>
+        <div id="draw-opacity-popup" class="draw-opacity-popup" style="display: none;">
+          <span class="draw-opacity-title">Isi kotak (maks 50%)</span>
+          <input type="range" id="draw-opacity-slider" min="5" max="50" step="5" value="20" aria-label="Opacity isi kotak">
+          <span id="draw-opacity-label">20%</span>
+        </div>
+      </div>
+
+      <!-- Font Size Slider — cuma ngaruh ke drawing tipe teks. Range 10px–32px -->
+      <div style="position: relative; display: flex; align-items: center;">
+        <button type="button" class="draw-tool-btn" id="draw-font-btn" title="Ukuran Huruf Teks (10px – 32px)" style="font-weight: 800; font-size: 11px;">10</button>
+        <div id="draw-font-popup" class="draw-font-popup" style="display: none;">
+          <span class="draw-opacity-title">Ukuran huruf teks</span>
+          <input type="range" id="draw-font-slider" min="10" max="32" step="1" value="10" aria-label="Ukuran huruf teks">
+          <span id="draw-font-label">10px</span>
+        </div>
+      </div>
+
+      <!-- Line Thickness Button -->
+      <button type="button" class="draw-tool-btn" id="draw-width-btn" title="Ketebalan Garis (Klik untuk ubah: 0.5 / 1)" style="font-weight: 800; font-size: 11px;">1</button>
+      <!-- Delete Button -->
+      <button type="button" class="draw-tool-btn" id="draw-trash-btn" title="Hapus Garis Aktif / Semua Garis Koin Ini">🗑️</button>
+
+      <!-- Sync Cloud (Supabase) — garis tersimpan online & sinkron antar device -->
+      <div style="position: relative; display: flex; align-items: center;">
+        <button type="button" class="draw-tool-btn" id="draw-sync-btn" title="Sync Garis Online (Supabase)">☁️</button>
+        <div id="draw-sync-popup" class="draw-palette-popup draw-sync-popup" style="display: none;">
+          <span class="draw-sync-title">Sync Garis Online</span>
+          <div id="draw-sync-status" class="draw-sync-status">…</div>
+          <span class="draw-sync-title">Sync Key (harus sama di semua device)</span>
+          <div class="draw-sync-row">
+            <input type="text" id="draw-sync-key-input" class="draw-sync-input" spellcheck="false" autocomplete="off" placeholder="tempel sync key di sini">
+            <button type="button" id="draw-sync-copy-btn" class="draw-sync-btn-mini" title="Copy sync key">📋</button>
+          </div>
+          <button type="button" id="draw-sync-apply-btn" class="draw-sync-btn-mini">Pakai Key Ini</button>
+          <span class="draw-sync-hint">Garis tersimpan otomatis per koin. Key beda = data beda.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Go to Date — lompat ke tanggal tertentu, nempel di atas tombol Set Target -->
+    <button type="button" id="gotodate-btn" class="gotodate-fab" title="Lompat ke tanggal tertentu di chart">📅</button>
+
+    <!-- Toggle mode Set Target — tombol kecil di atas tombol ⚡ -->
+    <button type="button" id="target-toggle-btn" class="target-toggle-btn" title="Set Target: OFF">🎯</button>
+
+    <!-- Floating Refresh FAB (Bottom Right) -->
+    <button id="fab-refresh" class="fab-refresh" title="Refresh App">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+    </button>
+  </body>
+</html>
